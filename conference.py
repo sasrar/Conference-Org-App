@@ -788,4 +788,21 @@ class ConferenceApi(remote.Service):
 
         return SessionForms(items=[self._copySessionToForm(session) for session in q])
 
+    @endpoints.method(message_types.VoidMessage, SessionForms,
+            path='getNonWorkshopSessionsBeforeGivenTime',
+            http_method='GET', name='getNonWorkshopSessionsBeforeGivenTime')
+    def getNonWorkshopSessionsBeforeGivenTime(self, request):
+        """Query Sessions that are of type other than Workshop and 
+        take place before 7p"""
+
+        time = "19:00"
+        q = Session.query()
+        q = q.filter(Session.typeOfSession != 'Workshop')
+
+        p = Session.query()
+        p = p.filter(Session.startTime != None)
+        p = p.filter(Session.startTime < datetime.strptime(time, "%H:%M").time())
+
+        return SessionForms(items=[self._copySessionToForm(session) for session in q if session in p])
+
 api = endpoints.api_server([ConferenceApi]) # register API
