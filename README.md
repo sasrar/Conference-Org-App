@@ -34,13 +34,14 @@ A Conference Organization Application
 
 ## Session
 A Conference can have session(s). Each session holds information about a conference session. This includes:
-	name | 
-    highlights |
-    speaker |
-    duration |
-    typeOfSession |
-    date |
-    startTime |
+	----------------|
+	name 	   		|
+    highlights 		|
+    speaker    		|
+    duration 		|
+    typeOfSession 	|
+    date 			|
+    startTime 		|
 
 ## Additional Queries
 Two additional queries have been added to the application.
