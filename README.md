@@ -23,7 +23,7 @@ A Conference Organization Application
 6. (Optional) Generate your client library(ies) with [the endpoints tool][6].
 7. Deploy your application.
 8. Go to API explorer site on local by typing "_ah/api/explorer" to end of local url (do the same on deployed site)
-9. Exectue the different api methods in the API explorer (do the same on deploted site)
+9. Execute the different api methods in the API explorer (do the same on deployed site)
 
 [1]: https://developers.google.com/appengine
 [2]: http://python.org
@@ -34,13 +34,13 @@ A Conference Organization Application
 
 ## Session
 A Conference can have session(s). Each session holds information about a conference session. This includes:
-	* name 
-    * highlights
-    * speaker
-    * duration
-    * typeOfSession
-    * date
-    * startTime
+	name | 
+    highlights |
+    speaker |
+    duration |
+    typeOfSession |
+    date |
+    startTime |
 
 ## Additional Queries
 Two additional queries have been added to the application.
