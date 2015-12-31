@@ -50,6 +50,7 @@ from utils import getUserId
 EMAIL_SCOPE = endpoints.EMAIL_SCOPE
 API_EXPLORER_CLIENT_ID = endpoints.API_EXPLORER_CLIENT_ID
 MEMCACHE_ANNOUNCEMENTS_KEY = "RECENT_ANNOUNCEMENTS"
+MEMCACHE_FEATURED_SPEAKER = "FEATURED_SPEAKER"
 ANNOUNCEMENT_TPL = ('Last chance to attend! The following conferences '
                     'are nearly sold out: %s')
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -693,7 +694,11 @@ class ConferenceApi(remote.Service):
         data['key'] = s_key
 
         Session(**data).put()
-
+        # determine whether the session's speaker
+        # should be the new featured speaker
+        taskqueue.add(params={'speaker': data['speaker']},
+            url='/tasks/determine_featured_speaker'
+        )
         return self._copySessionToForm(request)
 
     @ndb.transactional(xg=True)
@@ -796,6 +801,8 @@ class ConferenceApi(remote.Service):
         take place before 7p"""
 
         time = "19:00"
+        # need two queries to avoid multiple inequality on
+        # different properties error
         q = Session.query()
         q = q.filter(Session.typeOfSession != 'Workshop')
 
@@ -803,6 +810,29 @@ class ConferenceApi(remote.Service):
         p = p.filter(Session.startTime != None)
         p = p.filter(Session.startTime < datetime.strptime(time, "%H:%M").time())
 
+        # only return Sessions that satisfy both query filters above
         return SessionForms(items=[self._copySessionToForm(session) for session in q if session in p])
+
+    @staticmethod
+    def _cacheFeaturedSpeaker(speakerName):
+        """Add speaker to featured speakers in memcache"""
+
+        q = Session.query()
+        q = q.filter(Session.speaker == speakerName)
+
+        p = Session.query()
+        p = p.filter(Session.speaker == memcache.get(MEMCACHE_FEATURED_SPEAKER))
+
+        if q.count() > p.count():
+            memcache.set(MEMCACHE_FEATURED_SPEAKER, speakerName)
+
+        return speakerName
+
+    @endpoints.method(message_types.VoidMessage, StringMessage,
+            path='session/speaker/get',
+            http_method='GET', name='getFeaturedSpeaker')
+    def getFeaturedSpeaker(self, request):
+        """Return Announcement from memcache."""
+        return StringMessage(data=memcache.get(MEMCACHE_FEATURED_SPEAKER) or "")
 
 api = endpoints.api_server([ConferenceApi]) # register API

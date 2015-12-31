@@ -6,11 +6,9 @@ main.py -- Udacity conference server-side Python App Engine
 
 $Id$
 
-created by wesc on 2014 may 24
-
 """
 
-__author__ = 'wesc+api@google.com (Wesley Chun)'
+__author__ = 'sasrar6@gmail.com (Sadaf Asrar)'
 
 import webapp2
 from google.appengine.api import app_identity
@@ -37,8 +35,14 @@ class SendConfirmationEmailHandler(webapp2.RequestHandler):
                 'conferenceInfo')
         )
 
+class DetermineFeaturedSpeakerHandler(webapp2.RequestHandler):
+    def post(self):
+        """Determine featured speaker."""
+        ConferenceApi._cacheFeaturedSpeaker(
+            self.request.get('speaker'))
 
 app = webapp2.WSGIApplication([
     ('/crons/set_announcement', SetAnnouncementHandler),
     ('/tasks/send_confirmation_email', SendConfirmationEmailHandler),
+    ('/tasks/determine_featured_speaker', DetermineFeaturedSpeakerHandler),
 ], debug=True)
