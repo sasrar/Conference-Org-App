@@ -1,4 +1,4 @@
-A Conference Organization Application
+# A Conference Organization Application
 
 ## Products
 - [App Engine][1]
