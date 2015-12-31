@@ -32,8 +32,21 @@ A Conference Organization Application
 [5]: https://localhost:8080/
 [6]: https://developers.google.com/appengine/docs/python/endpoints/endpoints_tool
 
+## Conference
+A Conference object holds information about a conference event. This includes:
+* name
+* description
+* organizerUserId
+* topics
+* city
+* startDate
+* month
+* endDate
+* maxAttendees
+* seatsAvailable
+
 ## Session
-A Conference can have session(s). Each session holds information about a conference session. This includes:
+A Conference can have session(s). Each session object holds information about a conference session. This includes:
 * name
 * highlights
 * speaker
@@ -50,7 +63,6 @@ Two additional queries have been added to the application.
 
 Another query has been implemented to return non-Workshop sessions that take place before before 7P. Google App Engine currently does not allow multiple inequality operators on different properties for a single query. To overcome this error I implemented two separate queries. 
 
-The first returned sessions that are not of type 'Workshop'.
+The first returns sessions that are not of type 'Workshop'.
 The second returns sessions that take place before 7P.
-
-I then only return sessions that are in both returned queries.
+I then return the intersection of both queries.
