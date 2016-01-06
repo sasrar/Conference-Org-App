@@ -666,6 +666,11 @@ class ConferenceApi(remote.Service):
         if not conf:
             raise endpoints.NotFoundException('No conference found with key: %s' % wsck)
 
+        # Check that user is owner of conference
+        if user_id != conf.organizerUserId:
+            raise endpoints.ForbiddenException(
+                'Only the owner can update the conference.')
+
         if not request.name:
             raise endpoints.BadRequestException("Conference 'name' field required")
 
@@ -699,7 +704,8 @@ class ConferenceApi(remote.Service):
         Session(**data).put()
         # Determine whether the session's speaker
         # should be the new featured speaker
-        taskqueue.add(params={'speaker': data['speaker']},
+        taskqueue.add(params={'speaker': data['speaker'],
+                              'websafeConferenceKey': wsck},
                       url='/tasks/determine_featured_speaker')
         return self._copySessionToForm(request)
 
@@ -806,7 +812,7 @@ class ConferenceApi(remote.Service):
         q = Session.query()
         q = q.filter(Session.typeOfSession != 'Workshop')
 
-        # need two queries to avoid multiple inequality on
+        # Need two queries to avoid multiple inequality on
         # different properties error
         p = Session.query()
         p = p.filter(Session.startTime != None)
@@ -816,26 +822,36 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in q if session in p])
 
     @staticmethod
-    def _cacheFeaturedSpeaker(speakerName):
+    def _cacheFeaturedSpeaker(speakerName, websafeConferenceKey):
         """Add speaker to featured speakers in memcache"""
 
-        q = Session.query()
+        # Get the conference
+        conf = ndb.Key(urlsafe=websafeConferenceKey).get()
+
+        # Get sessions with given speaker name
+        q = Session.query(ancestor=conf.key)
         q = q.filter(Session.speaker == speakerName)
 
-        p = Session.query()
-        p = p.filter(Session.speaker == memcache.get(MEMCACHE_FEATURED_SPEAKER))
+        # Get sessions with featured speaker name
+        currentFeaturedSpeaker = memcache.get(MEMCACHE_FEATURED_SPEAKER).partition(':')[0]
+        p = Session.query(ancestor=conf.key)
+        p = p.filter(Session.speaker == currentFeaturedSpeaker)
 
-        # Get speaker that is most common
+        # Set featured speaker as speaker that is most common
         if q.count() > p.count():
-            memcache.set(MEMCACHE_FEATURED_SPEAKER, speakerName)
+            # Include list of session names that the speaker is speaking at
+            speakerSessions = speakerName + ': '
+            for session in q:
+                speakerSessions += session.name + ', '
+            speakerSessions = speakerSessions[:-2]
 
-        return speakerName
+            memcache.set(MEMCACHE_FEATURED_SPEAKER, speakerSessions)
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
             path='session/speaker/get',
             http_method='GET', name='getFeaturedSpeaker')
     def getFeaturedSpeaker(self, request):
-        """Return Announcement from memcache."""
+        """Return Featured speaker from memcache."""
         return StringMessage(data=memcache.get(MEMCACHE_FEATURED_SPEAKER) or "")
 
 api = endpoints.api_server([ConferenceApi]) # register API
