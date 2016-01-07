@@ -34,20 +34,27 @@
 
 ## Conference
 A Conference object holds information about a conference event. This includes:
-* name
+* name			: this is required
 * description
-* organizerUserId
+* organizerUserId	: this is used to identify the user that created this conference
 * topics
 * city
 * startDate
 * month
 * endDate
-* maxAttendees
-* seatsAvailable
+* maxAttendees		: the maximum number of seats that can be occupied at this conference
+* seatsAvailable	: the number of seats that are left for this conference
+
+### Creating a conference
+A conference can be created using the <b>createConference</b> API method. The user passes all the data pertaining to a conference
+which is parsed and put into the datastore as a Conference entity.
+
+### Getting created conferences
+A user can get all the conferences they've created by using the <b>getConferencesCreated</b> endpoint method.
 
 ## Session
 A Conference can have session(s). Each session object holds information about a conference session. This includes:
-* name
+* name			: this is required
 * highlights
 * speaker
 * duration
