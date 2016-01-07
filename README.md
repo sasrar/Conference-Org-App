@@ -52,6 +52,13 @@ which is parsed and put into the datastore as a Conference entity.
 ### Getting created conferences
 A user can get all the conferences they've created by using the <b>getConferencesCreated</b> endpoint method.
 
+### Registering/Unregistering a conference
+A user can register for a conference using the registerForConference API method. The user provides the conference's web key
+and the API method takes care of adding this conference to a list of conferences the user will be attending in the future.
+
+In the same way a user can unregister from a conference using the unregisterFromConference API method. The method removes this
+conference from the list of conferences the user will be attending.
+
 ## Session
 A Conference can have session(s). Each session object holds information about a conference session. This includes:
 * name			: this is required
