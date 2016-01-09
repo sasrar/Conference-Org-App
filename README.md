@@ -86,8 +86,14 @@ A user can get a conference's sessions by type by passing the conference web key
 ### Getting sessions by speaker
 A user can get sessions that have a certain speaker by passing the speaker name to the <b>getSessionsBySpeaker</b> API method. The method uses a filter query on Sessions to get all sessions with the given speaker.
 
-### Adding and Removing sessions to a wishlist
-A user can add a session to a list of sessions they wish to attend by passing a session key to the <b>addSessionToWishlist</b> API method. The method simply gets the user's profile and the session using the session key. It then adds the session (if it exists) to the list of sessions of the user's profile.
+### Adding a session to wishlist
+A user can add a session to a list of sessions they wish to attend by passing a session key to the <b>addSessionToWishlist</b> API method. The method simply gets the user's profile and the session using the session key. It then adds the session (if it exists) to the profile's list of sessions.
+
+### Removing a session from wishlist
+A user can remove a session from the list of sessions they wish to attend by passing the session's key to the <b>deleteSessionInWishlist</b> API method. The method gets the user's profile and the session using the session key. It then removes the session (if it exists) from the profile's list of sessions.
+
+### Get featured speaker
+When a conference session is created the featured speaker is updated for that conference. This is done by using a task to store the new speaker in cache if the speaker has more sessions than the current featured speaker. The user can use the <b>getFeaturedSpeaker</b> API method to retrieve the featured speaker from cache.
 
 ## Additional Queries
 Two additional queries have been added to the application.
