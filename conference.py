@@ -619,7 +619,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in sessions])
 
     @endpoints.method(SESSION_GET_BYTYPE_REQUEST, SessionForms,
-            path='sessions/{websafeConferenceKey}/{typeOfSession}',
+            path='conference/sessions/{websafeConferenceKey}/type/{typeOfSession}',
             http_method='GET', name='getConferenceSessionsByType')
     def getConferenceSessionsByType(self, request):
         """Given a conference, return all sessions of a specified type (eg lecture, keynote, workshop)"""
@@ -636,7 +636,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in sessions])
 
     @endpoints.method(SESSION_GET_BYSPEAKER_REQUEST, SessionForms,
-            path='sessions/{speaker}',
+            path='conference/sessions/speaker/{speaker}',
             http_method='GET', name='getSessionsBySpeaker')
     def getSessionsBySpeaker(self, request):
         """Given a speaker, return all sessions given by this particular speaker, across all conferences"""
@@ -666,7 +666,7 @@ class ConferenceApi(remote.Service):
         if not conf:
             raise endpoints.NotFoundException('No conference found with key: %s' % wsck)
 
-        # Check that user is owner of conference
+        # Check that user is organizer of conference
         if user_id != conf.organizerUserId:
             raise endpoints.ForbiddenException(
                 'Only the owner can update the conference.')
@@ -707,7 +707,7 @@ class ConferenceApi(remote.Service):
         taskqueue.add(params={'speaker': data['speaker'],
                               'websafeConferenceKey': wsck},
                       url='/tasks/determine_featured_speaker')
-        return self._copySessionToForm(request)
+        return self._copySessionToForm(s_key.get())
 
     @ndb.transactional(xg=True)
     def _sessionRegistration(self, request, add=True):
@@ -812,7 +812,7 @@ class ConferenceApi(remote.Service):
         q = Session.query()
         q = q.filter(Session.typeOfSession != 'Workshop')
 
-        # Need two queries to avoid multiple inequality on
+        # need two queries to avoid multiple inequality on
         # different properties error
         p = Session.query()
         p = p.filter(Session.startTime != None)
@@ -832,8 +832,12 @@ class ConferenceApi(remote.Service):
         q = Session.query(ancestor=conf.key)
         q = q.filter(Session.speaker == speakerName)
 
-        # Get sessions with featured speaker name
-        currentFeaturedSpeaker = memcache.get(MEMCACHE_FEATURED_SPEAKER).partition(':')[0]
+        # Get current featured speaker
+        currentFeaturedSpeaker = memcache.get(MEMCACHE_FEATURED_SPEAKER)
+        if currentFeaturedSpeaker:
+            currentFeaturedSpeaker = currentFeaturedSpeaker.partition(':')[0]
+
+        # Get sessions with current featured speaker name
         p = Session.query(ancestor=conf.key)
         p = p.filter(Session.speaker == currentFeaturedSpeaker)
 
@@ -851,7 +855,7 @@ class ConferenceApi(remote.Service):
             path='session/speaker/get',
             http_method='GET', name='getFeaturedSpeaker')
     def getFeaturedSpeaker(self, request):
-        """Return Featured speaker from memcache."""
+        """Return Announcement from memcache."""
         return StringMessage(data=memcache.get(MEMCACHE_FEATURED_SPEAKER) or "")
 
 api = endpoints.api_server([ConferenceApi]) # register API

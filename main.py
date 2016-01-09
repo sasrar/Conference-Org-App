@@ -39,7 +39,8 @@ class DetermineFeaturedSpeakerHandler(webapp2.RequestHandler):
     def post(self):
         """Determine featured speaker."""
         ConferenceApi._cacheFeaturedSpeaker(
-            self.request.get('speaker'))
+            self.request.get('speaker'),
+            self.request.get('websafeConferenceKey'))
 
 app = webapp2.WSGIApplication([
     ('/crons/set_announcement', SetAnnouncementHandler),
