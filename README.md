@@ -72,6 +72,11 @@ A Conference can have session(s). Each session object holds information about a 
 * date
 * startTime
 
+### Creating a session
+A session can be created by passing the above mentioned data and a conference web key to the <b>createSession</b> API method. The method uses the conference web key to get the conference entity. It checks whether the user is the creator of the conference. It not, then the method returns an error (only conference creators can add sessions to it).
+
+A session key is created and set as the new session's key. All the data is parsed and formatted correctly (date, time, etc.). Finally, a Session entity is created and put into the datastore.
+
 ### Getting conference sessions
 A user can get all the sessions associated with a conference by passing the conference web key to the <b>getConferencesCreated</b> API method. The method gets the conference via the web key and uses an ancestor query on Sessions to get the conference's sessions.
 
@@ -79,7 +84,10 @@ A user can get all the sessions associated with a conference by passing the conf
 A user can get a conference's sessions by type by passing the conference web key and session type to the <b>getConferenceSessionsByType</b> API method. The method gets the conference's sessions using an ancestor query on Sessions. Then it filters those sessions by the session type passed to the method.
 
 ### Getting sessions by speaker
+A user can get sessions that have a certain speaker by passing the speaker name to the <b>getSessionsBySpeaker</b> API method. The method uses a filter query on Sessions to get all sessions with the given speaker.
 
+### Adding and Removing sessions to a wishlist
+A user can add a session to a list of sessions they wish to attend by passing a session key to the <b>addSessionToWishlist</b> API method. The method simply gets the user's profile and the session using the session key. It then adds the session (if it exists) to the list of sessions of the user's profile.
 
 ## Additional Queries
 Two additional queries have been added to the application.
