@@ -95,6 +95,16 @@ A user can remove a session from the list of sessions they wish to attend by pas
 ### Get featured speaker
 When a conference session is created the featured speaker is updated for that conference. This is done by using a task to store the new speaker in cache if the speaker has more sessions than the current featured speaker. The user can use the <b>getFeaturedSpeaker</b> API method to retrieve the featured speaker from cache.
 
+### Session data modeling
+These are the property types for each data value in a Session entity
+* name			: StringProperty
+* highlights		: StringProperty
+* speaker		: StringProperty
+* duration		: TimeProperty, used to store time values
+* typeOfSession		: StringProperty
+* date			: DateProperty, used to store date values
+* startTime		: TimeProperty, used to store time values
+
 ## Additional Queries
 Two additional queries have been added to the application.
 
