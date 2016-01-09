@@ -683,7 +683,6 @@ class ConferenceApi(remote.Service):
         for df in SESSION_DEFAULTS:
             if data[df] in (None, []):
                 data[df] = SESSION_DEFAULTS[df]
-                setattr(request, df, SESSION_DEFAULTS[df])
 
         # Convert date from string to Date object;
         if data['date']:
@@ -739,7 +738,7 @@ class ConferenceApi(remote.Service):
             # check if user already registered
             if s_key in prof.sessionKeysToAttend:
 
-                # remove user, add back one seat
+                # remove session from list of sessions to attend
                 prof.sessionKeysToAttend.remove(s_key)
                 retval = True
             else:
