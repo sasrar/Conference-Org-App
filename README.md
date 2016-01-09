@@ -53,11 +53,14 @@ which is parsed and put into the datastore as a Conference entity.
 A user can get all the conferences they've created by using the <b>getConferencesCreated</b> endpoint method.
 
 ### Registering/Unregistering a conference
-A user can register for a conference using the registerForConference API method. The user provides the conference's web key
+A user can register for a conference using the <b>registerForConference</b> API method. The user provides the conference's web key
 and the API method takes care of adding this conference to a list of conferences the user will be attending in the future.
 
-In the same way a user can unregister from a conference using the unregisterFromConference API method. The method removes this
+In the same way a user can unregister from a conference using the <b>unregisterFromConference</b> API method. The method removes this
 conference from the list of conferences the user will be attending.
+
+### Getting conferences to attend
+A user can see which conferences they have registered for by using the <b>getConferencesToAttend</b> API method. The method gets the user's profile and gets the list of sessions the user is registered for.
 
 ## Session
 A Conference can have session(s). Each session object holds information about a conference session. This includes:
@@ -68,6 +71,15 @@ A Conference can have session(s). Each session object holds information about a 
 * typeOfSession
 * date
 * startTime
+
+### Getting conference sessions
+A user can get all the sessions associated with a conference by passing the conference web key to the <b>getConferencesCreated</b> API method. The method gets the conference via the web key and uses an ancestor query on Sessions to get the conference's sessions.
+
+### Getting conference sessions by type
+A user can get a conference's sessions by type by passing the conference web key and session type to the <b>getConferenceSessionsByType</b> API method. The method gets the conference's sessions using an ancestor query on Sessions. Then it filters those sessions by the session type passed to the method.
+
+### Getting sessions by speaker
+
 
 ## Additional Queries
 Two additional queries have been added to the application.
