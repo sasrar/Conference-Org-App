@@ -108,8 +108,8 @@ These are the property types for each data value in a Session entity
 ## Additional Queries
 Two additional queries have been added to the application.
 
-	1. getOldSessions(): returns sessions that take place before 12/01/05
-	2. getNewSessions(): returns sessions that take place after 01/01/10
+	1. getPreviousSessions(): returns sessions that take place before given date (mm-dd-yy)
+	2. getLaterSessions(): returns sessions that take place after given date (mm-dd-yy)
 
 Another query has been implemented to return non-Workshop sessions that take place before before 7P. Google App Engine currently does not allow multiple inequality operators on different properties for a single query. To overcome this error I implemented two separate queries. 
 
