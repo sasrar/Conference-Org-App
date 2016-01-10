@@ -110,12 +110,16 @@ SESSION_GET_REQUEST = endpoints.ResourceContainer(
 )
 
 SESSION_GET_BYSPEAKER_REQUEST = endpoints.ResourceContainer(
-    speaker=messages.StringField(3)
+    speaker=messages.StringField(1)
 )
 
 SESSION_GET_BYTYPE_REQUEST = endpoints.ResourceContainer(
     websafeConferenceKey=messages.StringField(1),
     typeOfSession=messages.StringField(2)
+)
+
+SESSION_GET_DATE_REQUEST = endpoints.ResourceContainer(
+    date=messages.StringField(1)
 )
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -777,26 +781,26 @@ class ConferenceApi(remote.Service):
         # return set of ConferenceForm objects per Conference
         return SessionForms(items=[self._copySessionToForm(session) for session in sessions])
 
-    @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='sessions/getOldSessions',
-            http_method='GET', name='getOldSessions')
-    def getOldSessions(self, request):
-        """New Query: Query Sessions that are old"""
-        datetemp = "12/01/05"
+    @endpoints.method(SESSION_GET_DATE_REQUEST, SessionForms,
+            path='sessions/getPreviousSessions/{date}',
+            http_method='GET', name='getPreviousSessions')
+    def getPreviousSessions(self, request):
+        """New Query: Query sessions that occur before the given date (MM-DD-YY)"""
+        datetemp = request.date
         q = Session.query()
         q = q.filter(Session.date != None)
-        q = q.filter(Session.date < datetime.strptime(datetemp, "%m/%d/%y").date())
+        q = q.filter(Session.date < datetime.strptime(datetemp, "%m-%d-%y").date())
 
         return SessionForms(items=[self._copySessionToForm(session) for session in q])
 
-    @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='sessions/getNewSessions',
-            http_method='GET', name='getNewSessions')
-    def getNewSessions(self, request):
-        """New query: Query Sessions that are new"""
-        datetemp = "01/01/10"
+    @endpoints.method(SESSION_GET_DATE_REQUEST, SessionForms,
+            path='sessions/getLaterSessions/{date}',
+            http_method='GET', name='getLaterSessions')
+    def getLaterSessions(self, request):
+        """New query: Query Sessions that occur after the given date (MM-DD-YY)"""
+        datetemp = request.date
         q = Session.query()
-        q = q.filter(Session.date > datetime.strptime(datetemp, "%m/%d/%y").date())
+        q = q.filter(Session.date > datetime.strptime(datetemp, "%m-%d-%y").date())
 
         return SessionForms(items=[self._copySessionToForm(session) for session in q])
 
