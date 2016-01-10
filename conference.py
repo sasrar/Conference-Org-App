@@ -649,7 +649,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in sessions])
 
     @endpoints.method(SESSION_POST_REQUEST, SessionForm,
-            path='session/{websafeConferenceKey}', http_method='POST',
+            path='conference/sessions/create/{websafeConferenceKey}', http_method='POST',
             name='createSession')
     def createSession(self, request):
         """Create new Session. Open to the organizer of the conference"""
@@ -749,7 +749,7 @@ class ConferenceApi(remote.Service):
         return BooleanMessage(data=retval)
 
     @endpoints.method(SESSION_POST_WISHLIST_REQUEST, BooleanMessage,
-            path='addSessionToWishlist/{sessionKey}',
+            path='conference/sessions/addSessionToWishlist/{sessionKey}',
             http_method='POST', name='addSessionToWishlist')
     def addSessionToWishlist(self, request):
         """Adds the session to the user's list of sessions they are interested in attending"""
@@ -757,7 +757,7 @@ class ConferenceApi(remote.Service):
         return self._sessionRegistration(request)
 
     @endpoints.method(SESSION_POST_WISHLIST_REQUEST, BooleanMessage,
-            path='addSessionToWishlist/{sessionKey}',
+            path='conference/sessions/deleteSessionInWishlist/{sessionKey}',
             http_method='DELETE', name='deleteSessionInWishlist')
     def deleteSessionInWishlist(self, request):
         """Removes the session from the user's list of sessions they are interested in attending"""
@@ -765,7 +765,7 @@ class ConferenceApi(remote.Service):
         return self._sessionRegistration(request, add=False)
 
     @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='sessions/attending',
+            path='sessions/getSessionsInWishlist',
             http_method='GET', name='getSessionsInWishlist')
     def getSessionsInWishlist(self, request):
         """Query for all the sessions in a conference that the user is interested in"""
@@ -778,7 +778,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in sessions])
 
     @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='getOldSessions',
+            path='sessions/getOldSessions',
             http_method='GET', name='getOldSessions')
     def getOldSessions(self, request):
         """New Query: Query Sessions that are old"""
@@ -790,7 +790,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in q])
 
     @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='getNewSessions',
+            path='sessions/getNewSessions',
             http_method='GET', name='getNewSessions')
     def getNewSessions(self, request):
         """New query: Query Sessions that are new"""
@@ -801,7 +801,7 @@ class ConferenceApi(remote.Service):
         return SessionForms(items=[self._copySessionToForm(session) for session in q])
 
     @endpoints.method(message_types.VoidMessage, SessionForms,
-            path='getNonWorkshopSessionsBeforeGivenTime',
+            path='sessions/getNonWorkshopSessionsBeforeGivenTime',
             http_method='GET', name='getNonWorkshopSessionsBeforeGivenTime')
     def getNonWorkshopSessionsBeforeGivenTime(self, request):
         """Query Sessions that are of type other than Workshop and
@@ -851,7 +851,7 @@ class ConferenceApi(remote.Service):
             memcache.set(MEMCACHE_FEATURED_SPEAKER, speakerSessions)
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
-            path='session/speaker/get',
+            path='sessions/getFeaturedSpeaker',
             http_method='GET', name='getFeaturedSpeaker')
     def getFeaturedSpeaker(self, request):
         """Return Announcement from memcache."""
